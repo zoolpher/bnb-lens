@@ -28,3 +28,12 @@ This file maintains a list of all the questions asked during the development of 
 
 9. **What is the maximum number of digits after the decimal for a Binance price level?**
    It depends on the coin, but the maximum is **8 decimal places**. For example, Bitcoin (BTC) usually only has 2 decimal places, but "meme coins" like Shiba Inu (SHIB) can have prices like `0.00001234`. Because the maximum is 8, we use a fixed multiplier of $10^8$ (100,000,000) for our integer scaling so it can safely handle any coin Binance throws at it.
+
+10. **What is the point of using a `namespace` when we already have classes and structs?**
+    A namespace acts like a "surname" (last name) for your code. It prevents naming collisions. If you name a class `OrderBook`, and you later import an external trading library that also has an `OrderBook` class, the C++ compiler will crash with a "name conflict" error. By wrapping your code in `namespace bnb`, your class's full name becomes `bnb::OrderBook`. It keeps your code safely isolated from the rest of the C++ universe.
+
+11. **Will calling `updateLevel()` 100 times per second cause memory or performance overhead?**
+    No, 100 times per second is actually incredibly slow for a modern CPU, which executes billions of operations per second. Furthermore, because we use the `-O2` optimization flag in CMake, the C++ compiler will likely "inline" the function. This means the compiler secretly removes the function call entirely and pastes the raw logic directly where it's needed, resulting in absolutely zero function-call overhead.
+
+12. **What exactly is "inlining" at the OS and CPU level?**
+    Normally, calling a function forces the CPU to pause, save its current state to a memory area called the "Stack", physically jump to a different location in RAM to execute the function, and then jump back. "Inlining" is a compiler trick where it replaces the function call with the actual raw instructions of the function itself. This eliminates the jump and the Stack usage, allowing the CPU to execute the networking or processing logic in one continuous, lightning-fast stream.
