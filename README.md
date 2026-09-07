@@ -1,0 +1,1 @@
+Here we will capture live data from binance public websocket
