@@ -37,3 +37,15 @@ This file maintains a list of all the questions asked during the development of 
 
 12. **What exactly is "inlining" at the OS and CPU level?**
     Normally, calling a function forces the CPU to pause, save its current state to a memory area called the "Stack", physically jump to a different location in RAM to execute the function, and then jump back. "Inlining" is a compiler trick where it replaces the function call with the actual raw instructions of the function itself. This eliminates the jump and the Stack usage, allowing the CPU to execute the networking or processing logic in one continuous, lightning-fast stream.
+
+13. **What are Boost and OpenSSL, and how do we manipulate them in C++?**
+    C++ doesn't natively know how to use the internet. **OpenSSL** is the math engine that encrypts our data (the "padlock" in a browser). **Boost (Asio/Beast)** is the networking engine. In C++, we combine them: we use Boost to open a raw TCP pipe to Binance, we inject OpenSSL into the pipe to encrypt it (turning it into a WSS stream), and then we use Boost.Beast to handle the continuous WebSocket data flow asynchronously.
+
+14. **How did the C++ code safely default the empty snapshot columns to exactly zero?**
+    In C++, if you declare a variable without initializing it (e.g., `OrderBookSnapshot snap;`), the compiler grabs a chunk of RAM but doesn't clean it, leaving "garbage data" from old programs in the memory. By adding curly braces (e.g., `OrderBookSnapshot snap{};`), we trigger "Zero Initialization." This forces the compiler to actively wipe that entire chunk of memory clean with zeros before we start using it.
+
+15. **Did we manually edit the `build` folder? How is it created?**
+    No human should ever manually edit files inside the `build` folder! It is generated automatically when we run the command `cmake -B build`. CMake reads our blueprint (`CMakeLists.txt`) and generates low-level machine scripts inside the `build` folder. When we run `cmake --build build`, the compiler uses those scripts to turn our `src/` code into the final `.exe` file, which is also placed inside the `build` folder. It is purely a "scratchpad" for the compiler.
+
+16. **Why did the program end instantly within a fraction of a second?**
+    Currently, our `main.cpp` is just running a static simulation. It reads the code top-to-bottom, adds 6 fake prices to the book, writes 1 line to the CSV, hits `return 0;`, and terminates instantly. When we add the live networking code, we will introduce an "Event Loop" that runs forever, constantly listening for new data and keeping the program alive until you manually force it to stop.
