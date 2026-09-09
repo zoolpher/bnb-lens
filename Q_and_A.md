@@ -49,3 +49,6 @@ This file maintains a list of all the questions asked during the development of 
 
 16. **Why did the program end instantly within a fraction of a second?**
     Currently, our `main.cpp` is just running a static simulation. It reads the code top-to-bottom, adds 6 fake prices to the book, writes 1 line to the CSV, hits `return 0;`, and terminates instantly. When we add the live networking code, we will introduce an "Event Loop" that runs forever, constantly listening for new data and keeping the program alive until you manually force it to stop.
+
+17. **Why does the infinite loop write to the CSV file in chunks (taking pauses) instead of continuously line-by-line?**
+    This is due to "I/O Buffering", a critical performance feature of C++ and the Operating System. Writing to a physical hard drive is extremely slow compared to CPU speed. If C++ forced the hard drive to physically spin and write every single millisecond, the program would lag horribly. Instead, C++ silently saves your rows into a "buffer" in RAM. When the buffer is completely full (e.g., 4 Kilobytes of text), it dumps the entire chunk to the hard drive all at once. This is why you see pauses followed by large bursts of data appearing in the file.
